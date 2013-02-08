@@ -2,13 +2,9 @@
 = Overview =
 
 Low latency futures library that use Java Concurrent Futures and ExecutorServce/ForkJoin
-
 After having tried Akka futures (both in Scala and Java) I found that the library adds an overhead on my 4 core i7 linux java 7 of 30 to 100 ms, 
-
 even after JIT kicks in.
-
 For applications where latency is important this is not an option. 
-
 After investigating I found that using simple code that uses the java.concurrent.util constructs ads 1-5 ms of overhead (after JIT).
 
 This library contains this code, and ads simple map, flatMap behaviour.
