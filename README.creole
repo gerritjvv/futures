@@ -1,0 +1,87 @@
+
+= Overview =
+
+Low latency futures library that use Java Concurrent Futures and ExecutorServce/ForkJoin
+
+After having tried Akka futures (both in Scala and Java) I found that the library adds an overhead on my 4 core i7 linux java 7 of 30 to 100 ms, 
+even after JIT kicks in.
+For applications where latency is important this is not an option. 
+After investigating I found that using simple code that uses the java.concurrent.util constructs ads 1-5 ms of overhead (after JIT).
+
+This library contains this code, and ads simple map, flatMap behaviour.
+
+The code is made look like Akka futures, to make refactoring simple.
+
+= Example =
+
+Run three futures, combine the results using flatMap and map and do something on completion
+
+		static final ForkJoinPool pool = new ForkJoinPool(10000);
+
+		final Future<String> f1 = Future.future(new Callable<String>(){
+			public String call(){
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return "a";
+			}
+		}, pool);
+		
+		final Future<String> f2 = Future.future(new Callable<String>(){
+			public String call(){
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return "b";
+			}
+		}, pool);
+		final Future<String> f3 = Future.future(new Callable<String>(){
+			public String call(){
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return "c";
+			}
+		}, pool);
+		
+		
+		Future<String> f = f1.flatMap(new Mapper<String, Future<String>>(){
+			public Future<String> apply(final String a){
+				return f2.flatMap(new Mapper<String, Future<String>>(){
+					public Future<String> apply(final String b){
+						return f3.map(new Mapper<String, String>(){
+							public String apply(final String c){
+								return a + ":" + b + ":" + c;
+							}
+						});
+					}
+				});
+			}
+		});
+
+
+
+= Maven =
+
+
+
+	<repositories>
+    		<repository>
+        	<id>releases</id>
+        	<url>https://github.com/gerritjvv/futures/raw/master/releases</url>
+    		</repository>
+	</repositories>
+
+
+	<dependency>
+	 <groupId>org.fun</groupId>
+	 <artifactId>futures</artifactId>
+	 <version>0.1.0</version>
+	</dependency>
+
