@@ -4,8 +4,11 @@
 Low latency futures library that use Java Concurrent Futures and ExecutorServce/ForkJoin
 
 After having tried Akka futures (both in Scala and Java) I found that the library adds an overhead on my 4 core i7 linux java 7 of 30 to 100 ms, 
+
 even after JIT kicks in.
+
 For applications where latency is important this is not an option. 
+
 After investigating I found that using simple code that uses the java.concurrent.util constructs ads 1-5 ms of overhead (after JIT).
 
 This library contains this code, and ads simple map, flatMap behaviour.
@@ -15,6 +18,8 @@ The code is made look like Akka futures, to make refactoring simple.
 = Example =
 
 Run three futures, combine the results using flatMap and map and do something on completion
+
+{{{
 
 		static final ForkJoinPool pool = new ForkJoinPool(10000);
 
@@ -65,11 +70,11 @@ Run three futures, combine the results using flatMap and map and do something on
 			}
 		});
 
-
+}}}
 
 = Maven =
 
-
+{{{
 
 	<repositories>
     		<repository>
@@ -84,4 +89,6 @@ Run three futures, combine the results using flatMap and map and do something on
 	 <artifactId>futures</artifactId>
 	 <version>0.1.0</version>
 	</dependency>
+
+}}}
 
